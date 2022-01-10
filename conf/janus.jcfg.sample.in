@@ -211,10 +211,10 @@ certificates: {
 # times, but may not work in case the RTT of the user is high: as such,
 # you should pick a reasonable trade-off (usually 2*max expected RTT).
 media: {
-	#ipv6 = true
+	ipv6 = false
 	#ipv6_linklocal = true
 	#min_nack_queue = 500
-	#rtp_port_range = "20000-30000"
+	rtp_port_range = "20000-30000"
 	#dtls_mtu = 1200
 	#no_media_timer = 1
 	#slowlink_threshold = 4

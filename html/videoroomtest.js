@@ -329,6 +329,17 @@ $(document).ready(function() {
 										$('#videolocal .no-video-container').remove();
 										$('#myvideo').removeClass('hide').show();
 									}
+
+									// For rtp_forward
+									var rtp_forward_stream = {
+										request: "rtp_forward",
+										//publisher_id: ,
+										room: myroom,
+										audio_port: 10010,
+										video_port: 10011,
+										host: "127.0.0.1"
+									};
+									sfutest.send({ message: rtp_forward_stream });
 								},
 								onremotestream: function(stream) {
 									// The publisher stream is sendonly, we don't expect anything here

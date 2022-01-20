@@ -13,7 +13,7 @@ RUN set -x \
     libgstreamer1.0-dev libgirepository1.0-dev libunwind-dev apt-utils \
     gdb \
     && aptitude install -y libmicrohttpd-dev libjansson-dev \
-	libssl-dev libsrtp2-dev libsofia-sip-ua-dev libglib2.0-dev \
+	libssl-dev libsofia-sip-ua-dev libglib2.0-dev \
 	libopus-dev libogg-dev libcurl4-openssl-dev liblua5.3-dev \
 	libconfig-dev pkg-config gengetopt libtool automake \
 	libnanomsg-dev
@@ -30,6 +30,14 @@ RUN set -x \
     && git clone https://github.com/freedesktop/libnice.git \
     && cd libnice \
     && meson --prefix=/usr build && ninja -C build && ninja -C build install
+RUN set -x \
+    && aptitude remove libsrtp2-dev
+RUN set -x \
+    && wget https://github.com/cisco/libsrtp/archive/v2.2.0.tar.gz \
+    && tar xfv v2.2.0.tar.gz \
+    && cd libsrtp-2.2.0 \
+    && ./configure --prefix=/usr --enable-openssl \
+    && make shared_library && make install
 RUN set -x \
     && git clone https://boringssl.googlesource.com/boringssl \
     && cd boringssl \
@@ -71,11 +79,20 @@ RUN set -x \
     && cmake -DCMAKE_INSTALL_PREFIX=/usr .. \
     && make -j8 && make install
 
+ARG CACHEBUST=1
+
+ARG SSH_PRIVATE_KEY
+RUN set -x \
+    && mkdir /root/.ssh/ \
+    && echo "${SSH_PRIVATE_KEY}" >> /root/.ssh/id_rsa \
+    && chmod 600 /root/.ssh/id_rsa \
+    && touch /root/.ssh/known_hosts \
+    && ssh-keyscan github.com >> /root/.ssh/known_hosts
 RUN export JANUS_WITH_POSTPROCESSING
 RUN  set -x \
-    && git clone https://github.com/meetecho/janus-gateway.git \
+    && git clone git@github.com:DaeyangCho/janus-gateway.git \
     && cd janus-gateway \
-    && git checkout v0.11.6 \
+    && git checkout klleon \
     && sh autogen.sh \
     && ./configure --prefix=/opt/janus \
     && make -j8 \
@@ -84,7 +101,8 @@ RUN  set -x \
 RUN  set -x \
     && rm -rf /libwebsockets \
     && rm -rf /janus-gateway \
-    && rm -rf /boringssl
+    && rm -rf /boringssl \
+    && rm /root/.ssh/id_rsa
 RUN adduser --disabled-password --gecos '' janus
 USER janus
 RUN /opt/janus/bin/janus --v

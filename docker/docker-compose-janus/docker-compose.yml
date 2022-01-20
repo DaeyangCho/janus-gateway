@@ -2,13 +2,17 @@ version: '3.8'
 services:
   nimbus:
     user: root
-    image: "janus:220106"
+    image: "janus:220120"
     volumes:
-      - ./config/:/opt/janus/etc/janus/
+      #- ./config/:/opt/janus/etc/janus/
       - ./log/:/var/log/
     restart: always
     ports:
+      # For rtp
+      - 5002:5002/udp
+      - 5004:5004/udp
       - 7088:7088
       - 8088:8088
+      - 8089:8089
       - 8188:8188
       - 10000-10030:10000-10030/udp

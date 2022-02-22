@@ -193,6 +193,8 @@ $(document).ready(function() {
 											bootbox.alert("The room has been destroyed", function() {
 												window.location.reload();
 											});
+										} else if (event === "rtp_forward") {
+											Janus.debug(" ::: rtp_forward successful response :::", msg);
 										} else if(event === "event") {
 											// Any new feed to attach to?
 											if(msg["publishers"]) {
@@ -330,14 +332,17 @@ $(document).ready(function() {
 										$('#myvideo').removeClass('hide').show();
 									}
 
+									Janus.debug(" ::: rtp_forward a local stream :::", stream);
 									// For rtp_forward
 									var rtp_forward_stream = {
 										request: "rtp_forward",
-										//publisher_id: ,
+										publisher_id: myid,
 										room: myroom,
-										audio_port: 10010,
-										video_port: 10011,
-										host: "127.0.0.1"
+										audio_port: 10050,
+										video_port: 10051,
+										host: "127.0.0.1",
+										//host: "192.168.64.1",
+										secret: "adminpwd"
 									};
 									sfutest.send({ message: rtp_forward_stream });
 								},
